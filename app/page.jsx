@@ -1,26 +1,24 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getAllPosts, getAllCategories } from "@/lib/posts";
 import {
   FiClock,
   FiCalendar,
-  FiTag,
   FiArrowLeft,
   FiBookOpen,
   FiUser,
-  FiGrid,
   FiHome,
   FiArrowRight,
-  FiZap,
-  FiStar,
-  FiArchive,
-  FiBookmark,
+  FiTag,
   FiFeather,
-  FiCompass,
+  FiStar,
+  FiTrendingUp,
+  FiMail,
 } from "react-icons/fi";
 import { FaHashtag } from "react-icons/fa";
 
 export const metadata = {
-  title: "المدونة | إسلام هداية",
+  title: "المدونة | إسلام هدايا",
   description: "مقالات تقنية في تطوير الويب، Next.js، React، والبرمجة بشكل عام",
 };
 
@@ -30,301 +28,359 @@ export default async function BlogPage() {
 
   // مقالات مميزة (آخر 3 مقالات)
   const featuredPosts = posts.slice(0, 3);
+  const latestPosts = posts.slice(3);
 
   return (
-    <main className="min-h-screen bg-[var(--background)] py-12 sm:py-20">
+    <main className="min-h-screen bg-[var(--background)] py-10 sm:py-16">
       <div className="max-w-6xl mx-auto px-5 sm:px-8">
+        {/* ============================================================ */}
         {/* شريط التنقل */}
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-[var(--nav-border)]">
-          <Link
-            href="/"
-            className="group inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[var(--nav-bg)] border border-[var(--nav-border)] hover:border-[var(--primary)] hover:bg-[var(--primary)]/5 transition-all duration-300"
-          >
-            <FiHome
-              className="text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors"
-              size={18}
-            />
-            <span className="text-sm font-medium text-[var(--text-muted)] group-hover:text-[var(--foreground)] transition-colors">
-              الرئيسية
-            </span>
-            <FiArrowRight
-              className="text-[var(--text-muted)] group-hover:text-[var(--primary)] group-hover:translate-x-0.5 transition-all"
-              size={14}
-            />
-          </Link>
+        {/* ============================================================ */}
+        <div className="flex items-center justify-between mb-12 pb-4 border-b border-[var(--nav-border)]">
+    
 
-          <span className="text-xs text-[var(--text-muted)] flex items-center gap-2">
-            <FiBookOpen size={14} className="hidden sm:block" />
-            <span className="font-medium text-[var(--foreground)]">
-              {posts.length}
+          <div className="flex items-center gap-4 text-xs text-[var(--text-muted)]">
+            <span className="flex items-center gap-1.5">
+              <FiBookOpen size={14} />
+              <span className="font-semibold text-[var(--foreground)]">
+                {posts.length}
+              </span>
+              مقالة
             </span>
-            مقالة
-          </span>
-        </div>
-
-        {/* الهيدر */}
-        <div className="relative mb-16">
-          <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/20 mb-4">
-              <FiFeather className="text-[var(--primary)]" size={16} />
-              <span className="text-xs font-medium text-[var(--primary)]">
-                المدونة التقنية
+            <span className="w-1 h-1 rounded-full bg-[var(--text-muted)]" />
+            <span className="flex items-center gap-1.5">
+              <FiTag size={14} />
+              <span className="font-semibold text-[var(--foreground)]">
+                {categories.length}
               </span>
-            </div>
-            <h1 className="text-4xl sm:text-5xl font-bold text-[var(--foreground)] leading-tight">
-              <FiCompass
-                className="inline-block text-[var(--primary)] mb-1 mr-2"
-                size={36}
-              />{" "}
-              مقالات و<span className="text-[var(--primary)]">خبرات</span>
-            </h1>
-            <p className="mt-4 text-[var(--text-muted)] text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-              نشارككم رحلتنا في عالم البرمجة، أحدث التقنيات، ونصائح عملية من
-              واقع التجربة
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-6 mt-6 text-sm text-[var(--text-muted)]">
-              <span className="flex items-center gap-2">
-                <FiZap className="text-[var(--primary)]" size={16} />
-                {posts.length} مقالة
-              </span>
-              <span className="flex items-center gap-2">
-                <FiTag className="text-[var(--accent)]" size={16} />
-                {categories.length} تصنيف
-              </span>
-            </div>
+              تصنيف
+            </span>
           </div>
         </div>
 
-        {/* مقالات مميزة */}
-        {featuredPosts.length > 0 && (
-          <div className="mb-16">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-1 h-6 bg-[var(--primary)] rounded-full" />
-              <h2 className="text-xl font-bold text-[var(--foreground)] flex items-center gap-2">
-                <FiStar className="text-yellow-400" size={20} />
-                مقالات مميزة
-              </h2>
+        {/* ============================================================ */}
+        {/* Hero Section — ترحيبي ومتوازن */}
+        {/* ============================================================ */}
+        <div className="text-center mb-16">
+          {/* Avatar */}
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[var(--primary)]/20 to-[var(--primary)]/5 border border-[var(--primary)]/20 mb-5 relative">
+            <FiFeather className="text-[var(--primary)]" size={32} />
+            <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[var(--nav-bg)] border-2 border-[var(--background)] flex items-center justify-center">
+              <span className="text-[10px]">✨</span>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              {featuredPosts.map((post, index) => (
+          </div>
+
+          {/* Title */}
+          <h1 className="text-4xl sm:text-5xl font-bold text-[var(--foreground)] leading-tight mb-4">
+            مرحباً بك في <span className="text-[var(--primary)]">مدونتي</span>
+          </h1>
+
+          {/* Subtitle */}
+          <p className="text-base sm:text-lg text-[var(--text-muted)] max-w-2xl mx-auto leading-relaxed">
+            مساحة أشارك فيها رحلتي في عالم البرمجة، التجارب العملية، والدروس
+            المستفادة من بناء تطبيقات الويب الحديثة.
+          </p>
+
+          {/* Author Tag */}
+          <div className="inline-flex items-center gap-2 mt-6 px-4 py-2 rounded-full bg-[var(--nav-bg)] border border-[var(--nav-border)]">
+            <FiUser className="text-[var(--primary)]" size={14} />
+            <span className="text-sm text-[var(--text-muted)]">
+              بقلم{" "}
+              <span className="text-[var(--foreground)] font-medium">
+                إسلام هدايا
+              </span>
+            </span>
+          </div>
+        </div>
+
+        {/* ============================================================ */}
+        {/* Featured Posts */}
+        {/* ============================================================ */}
+        {featuredPosts.length > 0 && (
+          <section className="mb-16">
+            <div className="flex items-center gap-3 mb-6">
+              <FiStar className="text-amber-400" size={20} />
+              <h2 className="text-xl font-bold text-[var(--foreground)]">
+                مقالات مختارة
+              </h2>
+              <div className="flex-1 h-px bg-[var(--nav-border)]" />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-5">
+              {/* Main Featured */}
+              {featuredPosts[0] && (
                 <Link
-                  key={post.slug}
-                  href={`/blog/${encodeURIComponent(post.slug)}`}
-                  className={`group relative overflow-hidden rounded-2xl border border-[var(--nav-border)] bg-[var(--nav-bg)] p-6 hover:border-[var(--primary)] hover:shadow-xl hover:shadow-[var(--primary)]/10 transition-all duration-500 ${
-                    index === 0 ? "md:col-span-2" : ""
-                  }`}
+                  href={`/blog/${encodeURIComponent(featuredPosts[0].slug)}`}
+                  className="group md:row-span-2 relative overflow-hidden rounded-2xl border border-[var(--nav-border)] bg-[var(--nav-bg)] p-7 hover:border-[var(--primary)] transition-colors"
                 >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--primary)]/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-                  <div className="relative">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="px-2.5 py-1 rounded-full text-[9px] font-bold bg-[var(--primary)]/10 text-[var(--primary)] uppercase tracking-wider">
-                        {post.category || "عام"}
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-[var(--primary)]/5 rounded-full blur-3xl" />
+
+                  <div className="relative h-full flex flex-col">
+                    {/* Badge */}
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center gap-1">
+                        <FiStar size={10} />
+                        الأحدث
                       </span>
-                      {index === 0 && (
-                        <span className="px-2.5 py-1 rounded-full text-[9px] font-bold bg-gradient-to-r from-amber-500/20 to-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center gap-1">
-                          <FiZap size={10} />
-                          الأحدث
-                        </span>
-                      )}
+                      <span className="px-3 py-1 rounded-full text-[10px] font-medium bg-[var(--primary)]/10 text-[var(--primary)]">
+                        {featuredPosts[0].category || "عام"}
+                      </span>
                     </div>
-                    <h3 className="text-lg font-bold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors line-clamp-2">
-                      {post.title}
+
+                    {/* Title */}
+                    <h3 className="text-2xl font-bold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors leading-snug mb-3">
+                      {featuredPosts[0].title}
                     </h3>
-                    <p className="mt-2 text-sm text-[var(--text-muted)] line-clamp-2 leading-relaxed">
-                      {post.excerpt || "لا يوجد ملخص لهذا المقال"}
+
+                    {/* Excerpt */}
+                    <p className="text-sm text-[var(--text-muted)] leading-relaxed line-clamp-3 mb-5 flex-1">
+                      {featuredPosts[0].excerpt || "لا يوجد ملخص لهذا المقال"}
                     </p>
-                    <div className="flex flex-wrap items-center gap-3 mt-4 text-xs text-[var(--text-muted)]">
+
+                    {/* Meta */}
+                    <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] pt-4 border-t border-[var(--nav-border)]">
                       <span className="flex items-center gap-1.5">
                         <FiCalendar size={13} />
-                        {post.created_at
-                          ? new Date(post.created_at).toLocaleDateString(
-                              "ar-EG",
-                            )
+                        {featuredPosts[0].created_at
+                          ? new Date(
+                              featuredPosts[0].created_at,
+                            ).toLocaleDateString("ar-EG", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })
                           : "جديد"}
                       </span>
-
-                      <span className="flex items-center gap-1.5 text-[var(--primary)]">
-                        <FiArrowLeft size={13} />
-                        <span className="text-[10px]">اقرأ</span>
+                      <span className="flex items-center gap-1.5 text-[var(--primary)] font-medium">
+                        <span>اقرأ المزيد</span>
+                        <FiArrowLeft
+                          className="group-hover:-translate-x-0.5 transition-transform"
+                          size={13}
+                        />
                       </span>
                     </div>
                   </div>
                 </Link>
-              ))}
+              )}
+
+              {/* Side Featured */}
+              <div className="space-y-5">
+                {featuredPosts.slice(1, 3).map((post) => (
+                  <Link
+                    key={post.slug}
+                    href={`/blog/${encodeURIComponent(post.slug)}`}
+                    className="group block relative overflow-hidden rounded-2xl border border-[var(--nav-border)] bg-[var(--nav-bg)] p-5 hover:border-[var(--primary)] transition-colors"
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[var(--primary)]/10 text-[var(--primary)]">
+                        {post.category || "عام"}
+                      </span>
+                    </div>
+
+                    <h3 className="text-base font-bold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors leading-snug mb-2 line-clamp-2">
+                      {post.title}
+                    </h3>
+
+                    <p className="text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed mb-3">
+                      {post.excerpt || "لا يوجد ملخص"}
+                    </p>
+
+                    <div className="flex items-center justify-between text-xs text-[var(--text-muted)] pt-3 border-t border-[var(--nav-border)]">
+                      <span className="flex items-center gap-1.5">
+                        <FiCalendar size={12} />
+                        {post.created_at
+                          ? new Date(post.created_at).toLocaleDateString(
+                              "ar-EG",
+                              { month: "short", day: "numeric" },
+                            )
+                          : "جديد"}
+                      </span>
+                      <FiArrowLeft
+                        className="text-[var(--primary)] group-hover:-translate-x-0.5 transition-transform"
+                        size={12}
+                      />
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          </section>
         )}
 
-        {/* التصنيفات */}
+        {/* ============================================================ */}
+        {/* Categories */}
+        {/* ============================================================ */}
         {categories.length > 0 && (
-          <div className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-1 h-6 bg-[var(--accent)] rounded-full" />
-                <h2 className="text-xl font-bold text-[var(--foreground)] flex items-center gap-2">
-                  <FiArchive size={20} />
-                  التصنيفات
-                </h2>
-              </div>
-              <span className="text-xs text-[var(--text-muted)]">
-                {categories.length} تصنيف
-              </span>
+          <section className="mb-12">
+            <div className="flex items-center gap-3 mb-5">
+              <FiTag className="text-[var(--primary)]" size={18} />
+              <h2 className="text-lg font-bold text-[var(--foreground)]">
+                التصنيفات
+              </h2>
+              <div className="flex-1 h-px bg-[var(--nav-border)]" />
             </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <Link
-                href="/"
-                className="group px-5 py-2.5 rounded-full text-sm font-bold bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] shadow-lg shadow-[var(--primary)]/25 hover:shadow-[var(--primary)]/40 transition-all duration-300 hover:scale-105"
-              >
-                <span className="flex items-center gap-2">
-                  <FiGrid size={16} />
-                  الكل
-                </span>
-              </Link>
+
+            <div className="flex flex-wrap items-center gap-2.5">
               {categories.map((category) => (
                 <Link
                   key={category}
                   href={`/blog/category/${encodeURIComponent(category)}`}
-                  className="group px-4 py-2 rounded-full text-sm font-medium border border-[var(--nav-border)] bg-[var(--nav-bg)] text-[var(--text-muted)] hover:border-[var(--primary)] hover:text-[var(--foreground)] hover:bg-[var(--primary)]/5 hover:shadow-lg hover:shadow-[var(--primary)]/5 transition-all duration-300"
+                  className="group inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm border border-[var(--nav-border)] bg-[var(--nav-bg)] text-[var(--text-muted)] hover:border-[var(--primary)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/5 transition-all"
                 >
-                  <span className="flex items-center gap-1.5">
-                    <FaHashtag
-                      size={12}
-                      className="text-[var(--text-muted)] group-hover:text-[var(--primary)]"
-                    />
-                    {category}
-                  </span>
+                  <FaHashtag size={11} />
+                  <span>{category}</span>
                 </Link>
               ))}
             </div>
-          </div>
+          </section>
         )}
 
-        {/* جميع المقالات */}
-        {posts.length === 0 ? (
-          <div className="text-center py-20">
-            <FiFeather className="text-6xl text-[var(--text-muted)] mx-auto mb-6" />
-            <h2 className="text-2xl font-bold text-[var(--foreground)] mb-3">
-              لا توجد مقالات حالياً
-            </h2>
-            <p className="text-[var(--text-muted)] text-lg">
-              ترقبوا المقالات القادمة قريباً ✨
-            </p>
-          </div>
-        ) : (
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-1 h-6 bg-[var(--primary)] rounded-full" />
-                <h2 className="text-xl font-bold text-[var(--foreground)] flex items-center gap-2">
-                  <FiBookmark size={20} />
-                  جميع المقالات
-                </h2>
-              </div>
+        {/* ============================================================ */}
+        {/* All Posts */}
+        {/* ============================================================ */}
+        {latestPosts.length > 0 && (
+          <section className="mb-16">
+            <div className="flex items-center gap-3 mb-6">
+              <FiTrendingUp className="text-[var(--primary)]" size={18} />
+              <h2 className="text-lg font-bold text-[var(--foreground)]">
+                جميع المقالات
+              </h2>
+              <div className="flex-1 h-px bg-[var(--nav-border)]" />
               <span className="text-xs text-[var(--text-muted)]">
-                {posts.length} مقالة
+                {latestPosts.length} مقالة
               </span>
             </div>
-            <div className="grid gap-4">
-              {posts.map((post, index) => (
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {latestPosts.map((post) => (
                 <Link
                   key={post.slug}
                   href={`/blog/${encodeURIComponent(post.slug)}`}
-                  className="group block p-5 rounded-2xl border border-[var(--nav-border)] bg-[var(--nav-bg)] hover:border-[var(--primary)] hover:shadow-xl hover:shadow-[var(--primary)]/5 transition-all duration-300 hover:scale-[1.01]"
+                  className="group block p-5 rounded-2xl border border-[var(--nav-border)] bg-[var(--nav-bg)] hover:border-[var(--primary)] transition-colors"
                 >
-                  <div className="flex flex-col sm:flex-row items-start gap-4">
-                    <div className="hidden sm:block text-4xl font-bold text-[var(--nav-border)] group-hover:text-[var(--primary)]/20 transition-colors w-14 text-center">
-                      #{String(index + 1).padStart(2, "0")}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[var(--primary)]/10 text-[var(--primary)] uppercase tracking-wider">
-                          {post.category || "عام"}
+                  {/* Category + Tags */}
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[var(--primary)]/10 text-[var(--primary)]">
+                      {post.category || "عام"}
+                    </span>
+                    {post.tags &&
+                      post.tags.slice(0, 2).map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-[10px] text-[var(--text-muted)] flex items-center gap-0.5"
+                        >
+                          <FaHashtag size={8} />
+                          {tag}
                         </span>
-                        {post.tags &&
-                          post.tags.slice(0, 3).map((tag) => (
-                            <span
-                              key={tag}
-                              className="px-2 py-0.5 rounded-full text-[9px] font-medium border border-[var(--nav-border)] text-[var(--text-muted)] flex items-center gap-0.5"
-                            >
-                              <FaHashtag size={8} />
-                              {tag}
-                            </span>
-                          ))}
-                        {post.tags && post.tags.length > 3 && (
-                          <span className="text-[9px] text-[var(--text-muted)] font-medium">
-                            +{post.tags.length - 3}
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="text-lg font-bold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors line-clamp-1">
-                        {post.title}
-                      </h3>
-                      <p className="mt-1.5 text-sm text-[var(--text-muted)] line-clamp-1 leading-relaxed">
-                        {post.excerpt || "لا يوجد ملخص لهذا المقال"}
-                      </p>
-                      <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-[var(--text-muted)]">
-                        <span className="flex items-center gap-1.5">
-                          <FiCalendar size={13} />
-                          {post.created_at
-                            ? new Date(post.created_at).toLocaleDateString(
-                                "ar-EG",
-                              )
-                            : "جديد"}
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <FiClock size={13} />
-                          {post.reading_time || 3} د
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <FiUser size={13} />
-                          {post.author || "إسلام هداية"}
-                        </span>
-                        <span className="flex items-center gap-1.5 text-[var(--primary)]">
-                          <FiArrowLeft size={13} />
-                          <span className="text-[10px] font-medium group-hover:translate-x-0.5 transition-transform">
-                            اقرأ
-                          </span>
-                        </span>
-                      </div>
-                    </div>
-                    <div className="hidden sm:block p-3 rounded-xl bg-[var(--nav-border)] text-[var(--text-muted)] group-hover:text-[var(--primary)] group-hover:bg-[var(--primary)]/10 transition-all duration-300">
-                      <FiBookOpen size={20} />
-                    </div>
+                      ))}
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-base font-bold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors leading-snug mb-2 line-clamp-2">
+                    {post.title}
+                  </h3>
+
+                  {/* Excerpt */}
+                  <p className="text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed mb-4">
+                    {post.excerpt || "لا يوجد ملخص لهذا المقال"}
+                  </p>
+
+                  {/* Meta */}
+                  <div className="flex flex-wrap items-center gap-3 text-[11px] text-[var(--text-muted)] pt-3 border-t border-[var(--nav-border)]">
+                    <span className="flex items-center gap-1.5">
+                      <FiCalendar size={12} />
+                      {post.created_at
+                        ? new Date(post.created_at).toLocaleDateString(
+                            "ar-EG",
+                            { month: "short", day: "numeric" },
+                          )
+                        : "جديد"}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <FiClock size={12} />
+                      {post.reading_time || 3} د
+                    </span>
+                    <span className="flex items-center gap-1.5 text-[var(--primary)] font-medium mr-auto">
+                      اقرأ
+                      <FiArrowLeft
+                        className="group-hover:-translate-x-0.5 transition-transform"
+                        size={11}
+                      />
+                    </span>
                   </div>
                 </Link>
               ))}
             </div>
+          </section>
+        )}
+
+        {/* ============================================================ */}
+        {/* Empty State */}
+        {/* ============================================================ */}
+        {posts.length === 0 && (
+          <div className="text-center py-24 px-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[var(--nav-bg)] border border-[var(--nav-border)] mb-5">
+              <FiFeather className="text-[var(--text-muted)]" size={24} />
+            </div>
+            <h2 className="text-xl font-bold text-[var(--foreground)] mb-2">
+              لا توجد مقالات حالياً
+            </h2>
+            <p className="text-sm text-[var(--text-muted)]">
+              ترقبوا المقالات القادمة قريباً
+            </p>
           </div>
         )}
 
-        {/* فوتر المدونة */}
-        <div className="mt-16 pt-8 border-t border-[var(--nav-border)]">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-[var(--text-muted)] flex items-center gap-2">
-              <FiFeather size={14} />
-              مدونة إسلام هداية — شارك معرفتك مع العالم
-            </p>
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-[var(--text-muted)]">تابعني:</span>
-              <a
-                href="https://github.com/eslam-cmd"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors"
-              >
-                GitHub
-              </a>
-              <a
-                href="https://linkedin.com/in/eslam-hadaya"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors"
-              >
-                LinkedIn
-              </a>
+        {/* ============================================================ */}
+        {/* Newsletter CTA */}
+        {/* ============================================================ */}
+        <section className="mt-16 mb-10">
+          <div className="relative overflow-hidden rounded-2xl border border-[var(--nav-border)] bg-[var(--nav-bg)] p-8 sm:p-10 text-center">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary)]/5 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-[var(--primary)]/5 rounded-full blur-3xl" />
+
+            <div className="relative">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/20 mb-4">
+                <FiMail className="text-[var(--primary)]" size={20} />
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold text-[var(--foreground)] mb-2">
+                هل تريد المزيد؟
+              </h3>
+              <p className="text-sm text-[var(--text-muted)] max-w-lg mx-auto mb-5 leading-relaxed">
+                تصفح جميع المقالات حسب التصنيف، أو تابعني على الشبكات الاجتماعية
+                للحصول على آخر التحديثات.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <a
+                  href="https://github.com/eslam-cmd"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary)] text-white text-sm font-medium hover:bg-[var(--primary-hover)] transition-colors"
+                >
+                  GitHub
+                </a>
+                <a
+                  href="https://linkedin.com/in/eslam-hadaya"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[var(--nav-border)] bg-[var(--background)] text-[var(--foreground)] text-sm font-medium hover:border-[var(--primary)] transition-colors"
+                >
+                  LinkedIn
+                </a>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* Footer */}
+        {/* ============================================================ */}
+        <footer className="pt-8 border-t border-[var(--nav-border)] text-center">
+          <p className="text-xs text-[var(--text-muted)] flex items-center justify-center gap-2">
+            <FiFeather size={12} />
+            مدونة إسلام هدايا — صُنعت بشغف
+          </p>
+        </footer>
       </div>
     </main>
   );
