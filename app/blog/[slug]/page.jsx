@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -8,6 +9,7 @@ import {
   FiCalendar,
   FiUser,
 } from "react-icons/fi";
+import { formatBlogDate, getBlogMessages, normalizeLocale } from "@/lib/i18n";
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
@@ -16,22 +18,37 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata({ params, searchParams }) {
   const { slug } = await params;
+  const { lang } = await searchParams;
+  const locale = normalizeLocale(lang);
+  const messages = getBlogMessages(locale);
   const normalizedSlug = normalizePostSlug(slug);
-  const post = await getPostBySlug(normalizedSlug);
-  if (!post) return { title: "المقالة غير موجودة" };
+  const post = await getPostBySlug(normalizedSlug, locale);
+  if (!post) return { title: messages.postNotFound };
 
   return {
-    title: `${post.title} | إسلام هدايا`,
+    title: `${post.title} | ${messages.siteTitle}`,
     description: post.excerpt,
   };
 }
 
-export default async function PostPage({ params }) {
+export default function PostPage({ params, searchParams }) {
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-[var(--background)]" />}>
+      <LocalizedPostPage params={params} searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function LocalizedPostPage({ params, searchParams }) {
   const { slug } = await params;
+  const { lang } = await searchParams;
+  const locale = normalizeLocale(lang);
+  const messages = getBlogMessages(locale);
+  const langSuffix = locale === "ar" ? "" : `?lang=${locale}`;
   const normalizedSlug = normalizePostSlug(slug);
-  const post = await getPostBySlug(normalizedSlug);
+  const post = await getPostBySlug(normalizedSlug, locale);
 
   if (!post) {
     notFound();
@@ -40,13 +57,21 @@ export default async function PostPage({ params }) {
   return (
     <main className="min-h-screen bg-[var(--background)] py-12 sm:py-20">
       <article className="max-w-3xl mx-auto px-5 sm:px-8">
+        {locale !== "ar" && post.translationAvailable !== true && (
+          <p
+            className="mb-6 rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-sm text-[var(--text-muted)]"
+            role="status"
+          >
+            {messages.translationUnavailable}
+          </p>
+        )}
         {/* رجوع */}
         <Link
-          href="/"
+          href={`/${langSuffix}`}
           className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors mb-6"
         >
           <FiArrowRight size={18} />
-          العودة للمدونة
+          {messages.backToBlog}
         </Link>
 
         {/* معلومات المقالة */}
@@ -73,7 +98,7 @@ export default async function PostPage({ params }) {
           <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-[var(--text-muted)]">
             <span className="flex items-center gap-1.5">
               <FiCalendar size={16} />
-              {new Date(post.date).toLocaleDateString("ar-EG")}
+              {formatBlogDate(post.created_at || post.date, locale)}
             </span>
             <span className="flex items-center gap-1.5">
               <FiUser size={16} />
@@ -83,7 +108,7 @@ export default async function PostPage({ params }) {
         </div>
 
         {/* صورة الغلاف */}
-        {post.coverImage && (
+        {(post.coverImage || post.cover_image) && (
           <div className="rounded-2xl overflow-hidden mb-8 bg-[var(--nav-bg)] aspect-video flex items-center justify-center">
             <span className="text-6xl">📝</span>
           </div>
@@ -153,13 +178,13 @@ export default async function PostPage({ params }) {
         <div className="mt-10 pt-8 border-t border-[var(--nav-border)]">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <p className="text-sm text-[var(--text-muted)]">
-              💡 هل أعجبك المقال؟ شاركه مع أصدقائك!
+              💡 {messages.articlePrompt}
             </p>
             <Link
-              href="/"
+              href={`/${langSuffix}`}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--primary)] text-white text-sm font-medium hover:bg-[var(--primary-hover)] transition-colors"
             >
-              مقالات أخرى
+              {messages.moreArticles}
               <FiArrowRight size={16} />
             </Link>
           </div>

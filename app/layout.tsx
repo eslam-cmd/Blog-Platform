@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Cairo, Inter } from "next/font/google";
+import LanguageSwitcher from "./components/LanguageSwitcher";
 import "./globals.css";
 
 const cairo = Cairo({
@@ -26,7 +28,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${cairo.variable} ${inter.variable} h-full antialiased dark`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Suspense fallback={null}>
+          <LanguageSwitcher />
+        </Suspense>
+        {children}
+      </body>
     </html>
   );
 }

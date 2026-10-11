@@ -41,3 +41,17 @@ body {
     background-color 0.3s ease,
     color 0.3s ease;
 }
+
+@keyframes translation-progress {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(300%);
+  }
+}
+
+.translation-progress {
+  animation: translation-progress 1.2s ease-in-out infinite;
+}

@@ -1,5 +1,5 @@
+import { Suspense } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { getAllPosts, getAllCategories } from "@/lib/posts";
 import {
   FiClock,
@@ -7,8 +7,6 @@ import {
   FiArrowLeft,
   FiBookOpen,
   FiUser,
-  FiHome,
-  FiArrowRight,
   FiTag,
   FiFeather,
   FiStar,
@@ -16,15 +14,29 @@ import {
   FiMail,
 } from "react-icons/fi";
 import { FaHashtag } from "react-icons/fa";
+import { formatBlogDate, getBlogMessages, normalizeLocale } from "@/lib/i18n";
 
-export const metadata = {
-  title: "المدونة | إسلام هدايا",
-  description: "مقالات تقنية في تطوير الويب، Next.js، React، والبرمجة بشكل عام",
-};
+export async function generateMetadata({ searchParams }) {
+  const { lang } = await searchParams;
+  const messages = getBlogMessages(normalizeLocale(lang));
+  return { title: messages.siteTitle, description: messages.siteDescription };
+}
 
-export default async function BlogPage() {
-  const posts = await getAllPosts();
-  const categories = await getAllCategories();
+export default function BlogPage({ searchParams }) {
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-[var(--background)]" />}>
+      <LocalizedBlogPage searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function LocalizedBlogPage({ searchParams }) {
+  const { lang } = await searchParams;
+  const locale = normalizeLocale(lang);
+  const messages = getBlogMessages(locale);
+  const langSuffix = locale === "ar" ? "" : `?lang=${locale}`;
+  const posts = await getAllPosts(locale);
+  const categories = await getAllCategories(locale);
 
   // مقالات مميزة (آخر 3 مقالات)
   const featuredPosts = posts.slice(0, 3);
@@ -37,7 +49,7 @@ export default async function BlogPage() {
         {/* شريط التنقل */}
         {/* ============================================================ */}
         <div className="flex items-center justify-between mb-12 pb-4 border-b border-[var(--nav-border)]">
-    
+
 
           <div className="flex items-center gap-4 text-xs text-[var(--text-muted)]">
             <span className="flex items-center gap-1.5">
@@ -45,7 +57,7 @@ export default async function BlogPage() {
               <span className="font-semibold text-[var(--foreground)]">
                 {posts.length}
               </span>
-              مقالة
+              {messages.articleCount}
             </span>
             <span className="w-1 h-1 rounded-full bg-[var(--text-muted)]" />
             <span className="flex items-center gap-1.5">
@@ -53,9 +65,18 @@ export default async function BlogPage() {
               <span className="font-semibold text-[var(--foreground)]">
                 {categories.length}
               </span>
-              تصنيف
+              {messages.categoryCount}
             </span>
           </div>
+          {locale !== "ar" &&
+            posts.some((post) => post.translationAvailable !== true) && (
+              <p
+                className="mb-8 rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-sm text-[var(--text-muted)]"
+                role="status"
+              >
+                {messages.translationUnavailable}
+              </p>
+            )}
         </div>
 
         {/* ============================================================ */}
@@ -72,22 +93,22 @@ export default async function BlogPage() {
 
           {/* Title */}
           <h1 className="text-4xl sm:text-5xl font-bold text-[var(--foreground)] leading-tight mb-4">
-            مرحباً بك في <span className="text-[var(--primary)]">مدونتي</span>
+            {messages.welcome}{" "}
+            <span className="text-[var(--primary)]">{messages.myBlog}</span>
           </h1>
 
           {/* Subtitle */}
           <p className="text-base sm:text-lg text-[var(--text-muted)] max-w-2xl mx-auto leading-relaxed">
-            مساحة أشارك فيها رحلتي في عالم البرمجة، التجارب العملية، والدروس
-            المستفادة من بناء تطبيقات الويب الحديثة.
+            {messages.introduction}
           </p>
 
           {/* Author Tag */}
           <div className="inline-flex items-center gap-2 mt-6 px-4 py-2 rounded-full bg-[var(--nav-bg)] border border-[var(--nav-border)]">
             <FiUser className="text-[var(--primary)]" size={14} />
             <span className="text-sm text-[var(--text-muted)]">
-              بقلم{" "}
+              {messages.by}{" "}
               <span className="text-[var(--foreground)] font-medium">
-                إسلام هدايا
+                {messages.blogAuthor}
               </span>
             </span>
           </div>
@@ -101,7 +122,7 @@ export default async function BlogPage() {
             <div className="flex items-center gap-3 mb-6">
               <FiStar className="text-amber-400" size={20} />
               <h2 className="text-xl font-bold text-[var(--foreground)]">
-                مقالات مختارة
+                {messages.featured}
               </h2>
               <div className="flex-1 h-px bg-[var(--nav-border)]" />
             </div>
@@ -110,7 +131,7 @@ export default async function BlogPage() {
               {/* Main Featured */}
               {featuredPosts[0] && (
                 <Link
-                  href={`/blog/${encodeURIComponent(featuredPosts[0].slug)}`}
+                  href={`/blog/${encodeURIComponent(featuredPosts[0].slug)}${langSuffix}`}
                   className="group md:row-span-2 relative overflow-hidden rounded-2xl border border-[var(--nav-border)] bg-[var(--nav-bg)] p-7 hover:border-[var(--primary)] transition-colors"
                 >
                   <div className="absolute top-0 right-0 w-40 h-40 bg-[var(--primary)]/5 rounded-full blur-3xl" />
@@ -120,10 +141,10 @@ export default async function BlogPage() {
                     <div className="flex items-center gap-2 mb-4">
                       <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center gap-1">
                         <FiStar size={10} />
-                        الأحدث
+                        {messages.newest}
                       </span>
                       <span className="px-3 py-1 rounded-full text-[10px] font-medium bg-[var(--primary)]/10 text-[var(--primary)]">
-                        {featuredPosts[0].category || "عام"}
+                        {featuredPosts[0].category || messages.general}
                       </span>
                     </div>
 
@@ -134,7 +155,7 @@ export default async function BlogPage() {
 
                     {/* Excerpt */}
                     <p className="text-sm text-[var(--text-muted)] leading-relaxed line-clamp-3 mb-5 flex-1">
-                      {featuredPosts[0].excerpt || "لا يوجد ملخص لهذا المقال"}
+                      {featuredPosts[0].excerpt || messages.noExcerpt}
                     </p>
 
                     {/* Meta */}
@@ -142,17 +163,15 @@ export default async function BlogPage() {
                       <span className="flex items-center gap-1.5">
                         <FiCalendar size={13} />
                         {featuredPosts[0].created_at
-                          ? new Date(
-                              featuredPosts[0].created_at,
-                            ).toLocaleDateString("ar-EG", {
+                          ? formatBlogDate(featuredPosts[0].created_at, locale, {
                               year: "numeric",
                               month: "long",
                               day: "numeric",
                             })
-                          : "جديد"}
+                          : messages.newPost}
                       </span>
                       <span className="flex items-center gap-1.5 text-[var(--primary)] font-medium">
-                        <span>اقرأ المزيد</span>
+                        <span>{messages.readMore}</span>
                         <FiArrowLeft
                           className="group-hover:-translate-x-0.5 transition-transform"
                           size={13}
@@ -168,12 +187,12 @@ export default async function BlogPage() {
                 {featuredPosts.slice(1, 3).map((post) => (
                   <Link
                     key={post.slug}
-                    href={`/blog/${encodeURIComponent(post.slug)}`}
+                    href={`/blog/${encodeURIComponent(post.slug)}${langSuffix}`}
                     className="group block relative overflow-hidden rounded-2xl border border-[var(--nav-border)] bg-[var(--nav-bg)] p-5 hover:border-[var(--primary)] transition-colors"
                   >
                     <div className="flex items-center gap-2 mb-3">
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[var(--primary)]/10 text-[var(--primary)]">
-                        {post.category || "عام"}
+                        {post.category || messages.general}
                       </span>
                     </div>
 
@@ -182,18 +201,18 @@ export default async function BlogPage() {
                     </h3>
 
                     <p className="text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed mb-3">
-                      {post.excerpt || "لا يوجد ملخص"}
+                      {post.excerpt || messages.noExcerpt}
                     </p>
 
                     <div className="flex items-center justify-between text-xs text-[var(--text-muted)] pt-3 border-t border-[var(--nav-border)]">
                       <span className="flex items-center gap-1.5">
                         <FiCalendar size={12} />
                         {post.created_at
-                          ? new Date(post.created_at).toLocaleDateString(
-                              "ar-EG",
-                              { month: "short", day: "numeric" },
-                            )
-                          : "جديد"}
+                          ? formatBlogDate(post.created_at, locale, {
+                              month: "short",
+                              day: "numeric",
+                            })
+                          : messages.newPost}
                       </span>
                       <FiArrowLeft
                         className="text-[var(--primary)] group-hover:-translate-x-0.5 transition-transform"
@@ -215,7 +234,7 @@ export default async function BlogPage() {
             <div className="flex items-center gap-3 mb-5">
               <FiTag className="text-[var(--primary)]" size={18} />
               <h2 className="text-lg font-bold text-[var(--foreground)]">
-                التصنيفات
+                {messages.categories}
               </h2>
               <div className="flex-1 h-px bg-[var(--nav-border)]" />
             </div>
@@ -224,7 +243,7 @@ export default async function BlogPage() {
               {categories.map((category) => (
                 <Link
                   key={category}
-                  href={`/blog/category/${encodeURIComponent(category)}`}
+                  href={`/blog/category/${encodeURIComponent(category)}${langSuffix}`}
                   className="group inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm border border-[var(--nav-border)] bg-[var(--nav-bg)] text-[var(--text-muted)] hover:border-[var(--primary)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/5 transition-all"
                 >
                   <FaHashtag size={11} />
@@ -243,11 +262,11 @@ export default async function BlogPage() {
             <div className="flex items-center gap-3 mb-6">
               <FiTrendingUp className="text-[var(--primary)]" size={18} />
               <h2 className="text-lg font-bold text-[var(--foreground)]">
-                جميع المقالات
+                {messages.allPosts}
               </h2>
               <div className="flex-1 h-px bg-[var(--nav-border)]" />
               <span className="text-xs text-[var(--text-muted)]">
-                {latestPosts.length} مقالة
+                {latestPosts.length} {messages.articleCount}
               </span>
             </div>
 
@@ -255,13 +274,13 @@ export default async function BlogPage() {
               {latestPosts.map((post) => (
                 <Link
                   key={post.slug}
-                  href={`/blog/${encodeURIComponent(post.slug)}`}
+                  href={`/blog/${encodeURIComponent(post.slug)}${langSuffix}`}
                   className="group block p-5 rounded-2xl border border-[var(--nav-border)] bg-[var(--nav-bg)] hover:border-[var(--primary)] transition-colors"
                 >
                   {/* Category + Tags */}
                   <div className="flex flex-wrap items-center gap-2 mb-3">
                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[var(--primary)]/10 text-[var(--primary)]">
-                      {post.category || "عام"}
+                      {post.category || messages.general}
                     </span>
                     {post.tags &&
                       post.tags.slice(0, 2).map((tag) => (
@@ -282,7 +301,7 @@ export default async function BlogPage() {
 
                   {/* Excerpt */}
                   <p className="text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed mb-4">
-                    {post.excerpt || "لا يوجد ملخص لهذا المقال"}
+                    {post.excerpt || messages.noExcerpt}
                   </p>
 
                   {/* Meta */}
@@ -290,18 +309,18 @@ export default async function BlogPage() {
                     <span className="flex items-center gap-1.5">
                       <FiCalendar size={12} />
                       {post.created_at
-                        ? new Date(post.created_at).toLocaleDateString(
-                            "ar-EG",
-                            { month: "short", day: "numeric" },
-                          )
-                        : "جديد"}
+                        ? formatBlogDate(post.created_at, locale, {
+                            month: "short",
+                            day: "numeric",
+                          })
+                        : messages.newPost}
                     </span>
                     <span className="flex items-center gap-1.5">
                       <FiClock size={12} />
-                      {post.reading_time || 3} د
+                      {post.reading_time || 3} {messages.minutes}
                     </span>
                     <span className="flex items-center gap-1.5 text-[var(--primary)] font-medium mr-auto">
-                      اقرأ
+                      {messages.read}
                       <FiArrowLeft
                         className="group-hover:-translate-x-0.5 transition-transform"
                         size={11}
@@ -323,10 +342,10 @@ export default async function BlogPage() {
               <FiFeather className="text-[var(--text-muted)]" size={24} />
             </div>
             <h2 className="text-xl font-bold text-[var(--foreground)] mb-2">
-              لا توجد مقالات حالياً
+              {messages.noPosts}
             </h2>
             <p className="text-sm text-[var(--text-muted)]">
-              ترقبوا المقالات القادمة قريباً
+              {messages.comingSoon}
             </p>
           </div>
         )}
@@ -344,11 +363,10 @@ export default async function BlogPage() {
                 <FiMail className="text-[var(--primary)]" size={20} />
               </div>
               <h3 className="text-xl sm:text-2xl font-bold text-[var(--foreground)] mb-2">
-                هل تريد المزيد؟
+                {messages.wantMore}
               </h3>
               <p className="text-sm text-[var(--text-muted)] max-w-lg mx-auto mb-5 leading-relaxed">
-                تصفح جميع المقالات حسب التصنيف، أو تابعني على الشبكات الاجتماعية
-                للحصول على آخر التحديثات.
+                {messages.browseCategories}
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <a
@@ -360,7 +378,7 @@ export default async function BlogPage() {
                   GitHub
                 </a>
                 <a
-                  href="https://linkedin.com/in/eslam-hadaya"
+                  href="https://www.linkedin.com/in/islam-hadaya-60a056357"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[var(--nav-border)] bg-[var(--background)] text-[var(--foreground)] text-sm font-medium hover:border-[var(--primary)] transition-colors"
@@ -378,7 +396,7 @@ export default async function BlogPage() {
         <footer className="pt-8 border-t border-[var(--nav-border)] text-center">
           <p className="text-xs text-[var(--text-muted)] flex items-center justify-center gap-2">
             <FiFeather size={12} />
-            مدونة إسلام هدايا — صُنعت بشغف
+            {messages.footer}
           </p>
         </footer>
       </div>
