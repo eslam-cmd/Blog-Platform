@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "highlight.js/styles/github-dark.css";
 
 :root {
   --background: #0a0a0a;
@@ -54,4 +55,78 @@ body {
 
 .translation-progress {
   animation: translation-progress 1.2s ease-in-out infinite;
+}
+
+.share-button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 1px solid var(--nav-border);
+  border-radius: 0.75rem;
+  background: var(--background);
+  padding: 0.5rem 0.8rem;
+  color: var(--foreground);
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.share-button:hover {
+  transform: translateY(-1px);
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, var(--background));
+}
+
+.share-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4 {
+  scroll-margin-top: 6rem;
+}
+
+.article-content a {
+  color: var(--primary-hover);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--primary) 45%, transparent);
+  text-underline-offset: 3px;
+}
+
+.article-content a:hover {
+  text-decoration-color: currentColor;
+}
+
+.article-content :not(pre) > code {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.article-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.article-content th,
+.article-content td {
+  border: 1px solid var(--nav-border);
+  padding: 0.65rem 0.85rem;
+  text-align: start;
+}
+
+.article-content th {
+  background: var(--nav-bg);
+  color: var(--foreground);
 }

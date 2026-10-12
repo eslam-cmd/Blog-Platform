@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Cairo, Inter } from "next/font/google";
 import LanguageSwitcher from "./components/LanguageSwitcher";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const cairo = Cairo({
@@ -15,9 +16,20 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: siteUrl,
   title: "مدونة إسلام هداية",
   description:
     "مقالات تقنية في تطوير الويب و Next.js و React والبرمجة بشكل عام.",
+  openGraph: {
+    type: "website",
+    title: "مدونة إسلام هداية",
+    description:
+      "مقالات تقنية في تطوير الويب و Next.js و React والبرمجة بشكل عام.",
+    siteName: "مدونة إسلام هداية",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

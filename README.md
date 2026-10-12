@@ -7,8 +7,11 @@ An Arabic, right-to-left technical blog built with Next.js App Router. The home 
 - Arabic RTL layout with Cairo and Inter fonts.
 - Blog home page with featured posts, recent posts, and category links.
 - Individual post pages with Markdown and GitHub Flavored Markdown support.
+- Syntax-highlighted fenced code blocks with a localized copy button.
+- Plain, multi-line code snippets are detected and rendered as copyable code blocks when possible.
+- Direct article sharing on LinkedIn and X, native device sharing, and copy-link support.
 - Category pages.
-- Per-post and per-category metadata.
+- Per-post and per-category metadata, Article JSON-LD, and localized dynamic social share images.
 - Server-side API fetching with a 60-second revalidation interval.
 - One site-wide language menu for Arabic, English, German, Persian, and Russian.
 - Article translations are generated when a post is published, stored in the PostgreSQL `posts.translations` JSONB column, and loaded by language without calling Gemini from the visitor's browser.
@@ -37,6 +40,7 @@ Create a `.env.local` file in the project root if the app should use an API othe
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
 `NEXT_PUBLIC_API_URL` is the API base URL. The posts helper appends `/posts` to this value. If it is not set, the app uses:
@@ -46,6 +50,19 @@ https://binaa-server.vercel.app/api
 ```
 
 Do not include `/posts` in the environment variable value.
+
+`NEXT_PUBLIC_SITE_URL` is the canonical public URL used for SEO and share metadata. Set it to the deployed blog origin (for example, `https://blog.example.com`) in production. On Vercel, `VERCEL_PROJECT_PRODUCTION_URL` or `VERCEL_URL` is used if this variable is not set.
+
+Article pages use `rehype-highlight` for Markdown code, with a copy control, and output Schema.org `Article` JSON-LD. Code-like paragraphs are detected as a fallback, but fenced Markdown is recommended for reliable language highlighting:
+
+````markdown
+```javascript
+const greeting = "Hello";
+console.log(greeting);
+```
+````
+
+Article pages provide direct LinkedIn and X share links, the device's native share sheet where available, and a copy-link button. Their Open Graph and X images are generated on demand from the localized article title, author, and tags.
 
 Set `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) in the **platform API server's** environment, not in the public Blogs app. The server uses it to generate the four stored translations during publish/update. Keep the key private and never use a `NEXT_PUBLIC_` variable for it. Gemini must also allow requests from the server's deployment region; a VPN used by a visitor does not change where server-side translation requests originate. Publishing fails with an explicit error if translation fails; drafts can still be saved.
 
