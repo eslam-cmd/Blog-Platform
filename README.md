@@ -13,8 +13,8 @@ An Arabic, right-to-left technical blog built with Next.js App Router. The home 
 - Category pages.
 - Per-post and per-category metadata, Article JSON-LD, and localized dynamic social share images.
 - Server-side API fetching with a 60-second revalidation interval.
-- One site-wide language menu for Arabic, English, German, Persian, and Russian.
-- Article translations are generated when a post is published, stored in the PostgreSQL `posts.translations` JSONB column, and loaded by language without calling Gemini from the visitor's browser.
+- One site-wide language menu for Arabic and English.
+- English article content is entered optionally by an administrator and stored in the PostgreSQL `posts.translations` JSONB column. No AI translation service is used.
 - The legacy `/blog` path redirects to `/`.
 
 ## Requirements
@@ -64,8 +64,6 @@ console.log(greeting);
 
 Article pages provide direct LinkedIn and X share links, the device's native share sheet where available, and a copy-link button. Their Open Graph and X images are generated on demand from the localized article title, author, and tags.
 
-Set `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) in the **platform API server's** environment, not in the public Blogs app. The server uses it to generate the four stored translations during publish/update. Keep the key private and never use a `NEXT_PUBLIC_` variable for it. Gemini must also allow requests from the server's deployment region; a VPN used by a visitor does not change where server-side translation requests originate. Publishing fails with an explicit error if translation fails; drafts can still be saved.
-
 ## Routes
 
 | Route | Description |
@@ -77,10 +75,10 @@ Set `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) in the **platform API server's** envi
 
 ## Posts API
 
-The app requests posts in the selected language from:
+The app requests posts in Arabic or English from:
 
 ```http
-GET {NEXT_PUBLIC_API_URL}/posts?lang=ar|en|de|fa|ru
+GET {NEXT_PUBLIC_API_URL}/posts?lang=ar|en
 ```
 
 The response is expected to contain a `posts` array:
@@ -105,7 +103,7 @@ The response is expected to contain a `posts` array:
 }
 ```
 
-The platform API returns the original Arabic fields for `lang=ar`; for other supported languages it selects `title`, `excerpt`, `content`, `category`, `tags`, and `author` from `translations[lang]`. The `slug` remains unchanged so translated pages keep stable URLs. The home page and category pages use the translated metadata, and the post page renders the translated `content` field as Markdown. If an older post has no complete translation, the Arabic article is shown with a notice rather than silently presenting mixed-language content.
+The platform API returns the original Arabic fields for `lang=ar`; for English it selects `title`, `excerpt`, `content`, `category`, `tags`, and `author` from `translations.en`. The `slug` remains unchanged so translated pages keep stable URLs. If a post has no complete English title and content, its Arabic text is shown with a notice explaining that the English version is unavailable.
 
 Posts are fetched on the server and cached with Next.js revalidation set to 60 seconds. Slugs are URL-decoded and Unicode-normalized before matching, which supports non-ASCII post slugs.
 
@@ -113,24 +111,28 @@ When the API request fails or does not return a `posts` array, the data helper l
 
 ## Language switcher
 
-The floating language menu is rendered by the root layout and is available on all routes. It offers Arabic, English, German, Persian (Farsi), and Russian. Selecting a language changes the `lang` query parameter and fetches the stored translation from the platform API. Interface labels use local dictionaries; article content is never translated at visit time. The progress bar indicates page navigation while translated data loads. Arabic and Persian use right-to-left layout; English, German, and Russian use left-to-right.
+The floating language menu is rendered by the root layout and is available on all routes. It offers Arabic and English. Selecting a language changes the `lang` query parameter and fetches the corresponding content from the platform API. Interface labels use local dictionaries; article content is never translated at visit time. Arabic uses right-to-left layout and English uses left-to-right.
 
-The language is preserved in the URL, so refreshing or sharing an article keeps the selected language. New published posts are translated into English, German, Persian, and Russian in one server-side Gemini request before they are saved.
+The language is preserved in the URL, so refreshing or sharing an article keeps the selected language. Administrators can enter the English version when creating or editing an article; the English title, content, and category are required together if any English field is provided. The English excerpt, tags, and author are optional.
 
-### Existing posts
+### Database
 
-After setting the Gemini key on the API server and applying the `posts.translations` JSONB column, run this once from `freelance-platform-admin/server` to translate published posts that are missing one or more locales:
+No new column or table is needed if `posts.translations` already exists as JSONB. The manually entered English version is stored in this shape:
 
-```sql
-ALTER TABLE posts
-ADD COLUMN IF NOT EXISTS translations JSONB DEFAULT '{}'::jsonb;
+```json
+{
+  "en": {
+    "title": "English title",
+    "excerpt": "English summary",
+    "content": "English Markdown content",
+    "category": "Category",
+    "tags": ["tag"],
+    "author": "Author"
+  }
+}
 ```
 
-```bash
-npm run translate:posts
-```
-
-The command processes posts sequentially and skips posts that already have all four complete translations. It can be rerun safely after a temporary Gemini failure.
+The original article fields in `posts` remain the Arabic version. Older translation keys, if present, are ignored by the blog.
 
 ## Project structure
 

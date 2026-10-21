@@ -6,7 +6,7 @@ import { FiCalendar, FiClock, FiArrowLeft } from "react-icons/fi";
 import { formatBlogDate, getBlogMessages, normalizeLocale } from "@/lib/i18n";
 
 export async function generateStaticParams() {
-  const locales = ["ar", "en", "de", "fa", "ru"];
+  const locales = ["ar", "en"];
   const categoriesByLocale = await Promise.all(
     locales.map((locale) => getAllCategories(locale)),
   );

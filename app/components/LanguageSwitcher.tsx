@@ -7,9 +7,6 @@ import { Languages, LoaderCircle } from "lucide-react";
 const LOCALES = [
   { code: "ar", label: "العربية" },
   { code: "en", label: "English" },
-  { code: "de", label: "Deutsch" },
-  { code: "fa", label: "فارسی" },
-  { code: "ru", label: "Русский" },
 ] as const;
 
 type Locale = (typeof LOCALES)[number]["code"];
@@ -28,8 +25,7 @@ export default function LanguageSwitcher() {
 
   useEffect(() => {
     document.documentElement.lang = locale;
-    document.documentElement.dir =
-      locale === "ar" || locale === "fa" ? "rtl" : "ltr";
+    document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
   }, [locale]);
 
   const selectLanguage = (nextLocale: Locale) => {

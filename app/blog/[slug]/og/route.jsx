@@ -29,7 +29,7 @@ export async function GET(request, { params }) {
           color: "#f8fafc",
           background:
             "linear-gradient(135deg, #07111f 0%, #10233f 58%, #123c55 100%)",
-          direction: locale === "ar" || locale === "fa" ? "rtl" : "ltr",
+          direction: locale === "ar" ? "rtl" : "ltr",
           fontFamily: "sans-serif",
         }}
       >
